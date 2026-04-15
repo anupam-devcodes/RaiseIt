@@ -4,6 +4,7 @@ const {
   getIssues,
   getIssueById,
   upvoteIssue,
+  deleteIssue,
 } = require("../controllers/issueController");
 const authMiddleware = require("../middleware/authMiddleware");
 const upload = require("../middleware/uploadMiddleware");
@@ -22,5 +23,6 @@ router.post(
 router.get("/", getIssues);
 router.get("/:id", getIssueById);
 router.post("/:id/upvote", authMiddleware, upvoteIssue);
+router.delete("/:id", authMiddleware, deleteIssue);
 
 module.exports = router;

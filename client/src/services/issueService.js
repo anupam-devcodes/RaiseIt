@@ -29,3 +29,8 @@ export const upvoteIssue = async (id) => {
   const response = await apiClient.post(`/issues/${id}/upvote`);
   return response.data?.data?.issue;
 };
+
+export const deleteIssue = async (id) => {
+  const response = await apiClient.delete(`/issues/${id}`);
+  return response.data?.data;
+};

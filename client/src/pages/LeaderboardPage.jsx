@@ -27,28 +27,33 @@ function LeaderboardPage() {
 
   return (
     <AppShell>
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-        <h2 className="text-2xl font-semibold">Leaderboard</h2>
-        <p className="text-sm text-slate-600">Ranked by issue impact (total upvotes).</p>
-        {loading && <p className="mt-3 text-sm text-slate-600">Loading leaderboard...</p>}
+      <div className="space-y-5">
+        <section className="surface-hero p-5 sm:p-6">
+          <p className="text-sm font-medium uppercase tracking-wide text-(--accent)">Impact Rankings</p>
+          <h2 className="mt-1 text-2xl font-semibold tracking-tight">Leaderboard</h2>
+          <p className="text-muted text-sm">Ranked by issue impact measured through total community upvotes.</p>
+        </section>
+      <div className="surface-card p-4 sm:p-5">
+        {loading && <p className="text-muted mt-3 text-sm">Loading leaderboard...</p>}
         <div className="mt-4 space-y-2">
           {!loading && leaders.length === 0 && (
-            <div className="rounded border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600">
+            <div className="surface-subtle p-3 text-sm">
               No leaderboard entries yet.
             </div>
           )}
           {leaders.map((leader, index) => (
-            <div key={`${leader.name}-${index}`} className="flex items-center justify-between rounded border border-slate-200 p-3">
+            <div key={`${leader.name}-${index}`} className="surface-subtle flex items-center justify-between p-3 transition hover:border-(--accent)">
               <div className="flex items-center gap-3">
-                <span className="w-7 rounded bg-slate-900 py-1 text-center text-xs text-white">#{index + 1}</span>
+                <span className="w-7 rounded bg-(--accent) py-1 text-center text-xs text-white">#{index + 1}</span>
                 <p className="font-medium">{leader.name}</p>
               </div>
-              <p className="text-sm text-slate-600">
+              <p className="text-muted text-sm">
                 {leader.score} votes • {leader.issues} issues
               </p>
             </div>
           ))}
         </div>
+      </div>
       </div>
     </AppShell>
   );

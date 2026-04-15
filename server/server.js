@@ -23,14 +23,20 @@ connectDB();
 
 const app = express();
 const server = http.createServer(app);
+const clientOrigin = process.env.CLIENT_URL || "http://localhost:5173";
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: clientOrigin,
     methods: ["GET", "POST"],
   },
 });
 
-app.use(cors());
+app.use(
+  cors({
+    origin: clientOrigin,
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", authRoutes);

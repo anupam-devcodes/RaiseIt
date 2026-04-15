@@ -21,6 +21,9 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
+    googleId: { type: String, unique: true, sparse: true },
+    authProviders: [{ type: String, enum: ["local", "google"] }],
+    isEmailVerified: { type: Boolean, default: false },
     password: { type: String, required: true },
     role: {
       type: String,

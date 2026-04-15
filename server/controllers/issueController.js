@@ -149,7 +149,7 @@ const upvoteIssue = async (req, res) => {
 
     issue.voteCount += 1;
 
-    if (issue.voteCount >= 50 && !issue.communityTriggered && !issue.community) {
+    if (issue.voteCount >= 4 && !issue.communityTriggered && !issue.community) {
       const locationString = [issue.location?.building, issue.location?.zone]
         .filter(Boolean)
         .join(", ");
@@ -164,7 +164,7 @@ const upvoteIssue = async (req, res) => {
         location: locationString,
         moderator: issue.reportedBy,
         memberCount: 1,
-        triggerVoteCount: 50,
+        triggerVoteCount: 4,
         createdBy: "system",
       });
 
@@ -183,7 +183,7 @@ const upvoteIssue = async (req, res) => {
         recipient: issue.reportedBy,
         type: "community_created",
         title: "Community created for your issue",
-        body: `A community was created for "${issue.title}" after reaching 50 upvotes.`,
+        body: `A community was created for "${issue.title}" after reaching 4 upvotes.`,
         relatedIssue: issue._id,
         relatedCommunity: community._id,
       });
@@ -200,9 +200,31 @@ const upvoteIssue = async (req, res) => {
   }
 };
 
+const deleteIssue = async (req, res) => {
+  try {
+    const issue = await Issue.findById(req.params.id);
+    if (!issue) {
+      return sendError(res, 404, "Issue not found");
+    }
+
+    const isOwner = String(issue.reportedBy) === String(req.user._id);
+    const isAdmin = req.user.role === "admin";
+    if (!isOwner && !isAdmin) {
+      return sendError(res, 403, "Forbidden: you can only delete your own issue");
+    }
+
+    await Issue.findByIdAndDelete(issue._id);
+
+    return sendSuccess(res, 200, "Issue deleted", { issueId: issue._id });
+  } catch (error) {
+    return sendError(res, 500, "Failed to delete issue");
+  }
+};
+
 module.exports = {
   createIssue,
   getIssues,
   getIssueById,
   upvoteIssue,
+  deleteIssue,
 };

@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, NavLink, Route, Routes, useNavigate } from "react-router-dom";
 import { loginUser, registerUser } from "./services/authService";
 import ChatRoomPage from "./pages/ChatRoomPage";
 import CommunitiesPage from "./pages/CommunitiesPage";
@@ -13,21 +13,78 @@ import ProtectedRoute from "./components/ProtectedRoute";
 const PublicDashboard = lazy(() => import("./pages/PublicDashboard"));
 
 const PageLoader = () => (
-  <div className="min-h-screen bg-slate-100 px-6 py-10 text-slate-700">
+  <div className="min-h-screen bg-(--background) px-6 py-10 text-(--text-muted)">
     Loading page...
   </div>
 );
 
-const AuthLayout = ({ title, children }) => (
-  <div className="min-h-screen bg-slate-100 px-6 py-10 text-slate-900">
-    <div className="mx-auto max-w-md rounded-xl bg-white p-6 shadow">
-      <h1 className="mb-5 text-2xl font-semibold">{title}</h1>
+const authInputClass =
+  "w-full rounded-xl border border-(--border) bg-(--background-elevated) px-4 py-3 text-sm text-(--text) placeholder:text-slate-400 dark:placeholder:text-slate-500 shadow-sm transition focus:border-(--accent) focus:bg-(--card) focus:outline-none focus:ring-4 focus:ring-(--ring)";
+
+const authButtonClass =
+  "w-full rounded-xl bg-(--accent) px-4 py-3.5 text-[0.95rem] font-semibold tracking-[0.01em] text-white shadow-[0_14px_32px_-14px_var(--accent)] transition hover:-translate-y-0.5 hover:brightness-110 focus:outline-none focus:ring-4 focus:ring-(--ring)";
+
+const authSelectClass = `${authInputClass} appearance-none`;
+
+const authLabelClass = "mb-2 block text-[11px] font-semibold uppercase tracking-[0.11em] text-(--text-muted)";
+const authHelperLinkClass = "font-medium text-(--accent) transition hover:underline";
+
+const AuthField = ({ label, children }) => (
+  <label className="block">
+    <span className={authLabelClass}>{label}</span>
+    {children}
+  </label>
+);
+
+const AuthLayout = ({ title, subtitle, children }) => (
+  <div className="min-h-screen bg-(--background) px-4 py-8 text-(--text) sm:px-6 sm:py-14">
+    <section className="mx-auto w-full max-w-md rounded-3xl border border-(--border) bg-(--card) p-5 shadow-sm sm:p-7">
+      <div className="mb-8 text-center sm:mb-9">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-(--accent)">RaiseIt</p>
+        <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-[2rem]">{title}</h2>
+        <p className="mx-auto mt-2.5 max-w-sm text-sm leading-relaxed text-(--text-muted)">{subtitle}</p>
+      </div>
+
+      <div className="mb-7 rounded-2xl border border-(--border) bg-(--background-elevated) p-1">
+        <div className="grid grid-cols-2 gap-1">
+          <NavLink
+            to="/auth/login"
+            className={({ isActive }) =>
+              `rounded-xl px-3 py-2.5 text-center text-sm font-semibold transition ${
+                isActive
+                  ? "bg-(--accent) text-white shadow-[0_8px_20px_-10px_var(--accent)]"
+                  : "text-(--text-muted) hover:bg-(--card) hover:text-(--text)"
+              }`
+            }
+          >
+            Login
+          </NavLink>
+          <NavLink
+            to="/auth/register"
+            className={({ isActive }) =>
+              `rounded-xl px-3 py-2.5 text-center text-sm font-semibold transition ${
+                isActive
+                  ? "bg-(--accent) text-white shadow-[0_8px_20px_-10px_var(--accent)]"
+                  : "text-(--text-muted) hover:bg-(--card) hover:text-(--text)"
+              }`
+            }
+          >
+            Register
+          </NavLink>
+        </div>
+      </div>
+
       {children}
-    </div>
+
+      <p className="mt-8 text-center text-[11px] leading-relaxed text-(--text-muted)">
+        By continuing, you agree to RaiseIt's terms and privacy policy.
+      </p>
+    </section>
   </div>
 );
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [message, setMessage] = useState("");
 
@@ -36,47 +93,65 @@ const LoginPage = () => {
     try {
       const data = await loginUser(formData);
       setMessage(`Logged in as ${data.user.role}`);
+      navigate("/", { replace: true });
     } catch (error) {
       setMessage(error.message || "Login failed");
     }
   };
 
   return (
-    <AuthLayout title="RaiseIt - Login">
-      <form className="space-y-3" onSubmit={onSubmit}>
-        <input
-          className="w-full rounded border px-3 py-2"
-          type="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={(event) =>
-            setFormData((prev) => ({ ...prev, email: event.target.value }))
-          }
-          required
-        />
-        <input
-          className="w-full rounded border px-3 py-2"
-          type="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={(event) =>
-            setFormData((prev) => ({ ...prev, password: event.target.value }))
-          }
-          required
-        />
+    <AuthLayout
+      title="Welcome back"
+      subtitle="Login to continue collaborating on campus issues."
+    >
+      <form className="space-y-5" onSubmit={onSubmit}>
+        <AuthField label="Email address">
+          <input
+            className={authInputClass}
+            type="email"
+            placeholder="you@college.edu"
+            value={formData.email}
+            onChange={(event) =>
+              setFormData((prev) => ({ ...prev, email: event.target.value }))
+            }
+            required
+          />
+        </AuthField>
+        <AuthField label="Password">
+          <input
+            className={authInputClass}
+            type="password"
+            placeholder="Enter your password"
+            value={formData.password}
+            onChange={(event) =>
+              setFormData((prev) => ({ ...prev, password: event.target.value }))
+            }
+            required
+          />
+        </AuthField>
+        <p className="pt-0.5 text-xs text-(--text-muted)">
+          Use the same account you created for your campus community.
+        </p>
         <button
           type="submit"
-          className="w-full rounded bg-slate-900 px-3 py-2 text-white"
+          className={authButtonClass}
         >
-          Login
+          Sign in to RaiseIt
         </button>
+        <p className="pt-1 text-center text-xs text-(--text-muted)">
+          New to RaiseIt?{" "}
+          <NavLink to="/auth/register" className={authHelperLinkClass}>
+            Create an account
+          </NavLink>
+        </p>
       </form>
-      {message && <p className="mt-4 text-sm text-slate-600">{message}</p>}
+      {message && <p className="mt-4 text-sm text-(--text-muted)">{message}</p>}
     </AuthLayout>
   );
 };
 
 const RegisterPage = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -91,73 +166,96 @@ const RegisterPage = () => {
     try {
       const data = await registerUser(formData);
       setMessage(`Registered as ${data.user.role}`);
+      navigate("/", { replace: true });
     } catch (error) {
       setMessage(error.message || "Registration failed");
     }
   };
 
   return (
-    <AuthLayout title="RaiseIt - Register">
-      <form className="space-y-3" onSubmit={onSubmit}>
-        <input
-          className="w-full rounded border px-3 py-2"
-          type="text"
-          placeholder="Name"
-          value={formData.name}
-          onChange={(event) =>
-            setFormData((prev) => ({ ...prev, name: event.target.value }))
-          }
-          required
-        />
-        <input
-          className="w-full rounded border px-3 py-2"
-          type="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={(event) =>
-            setFormData((prev) => ({ ...prev, email: event.target.value }))
-          }
-          required
-        />
-        <input
-          className="w-full rounded border px-3 py-2"
-          type="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={(event) =>
-            setFormData((prev) => ({ ...prev, password: event.target.value }))
-          }
-          required
-        />
-        <input
-          className="w-full rounded border px-3 py-2"
-          type="text"
-          placeholder="College"
-          value={formData.college}
-          onChange={(event) =>
-            setFormData((prev) => ({ ...prev, college: event.target.value }))
-          }
-          required
-        />
-        <select
-          className="w-full rounded border px-3 py-2"
-          value={formData.role}
-          onChange={(event) =>
-            setFormData((prev) => ({ ...prev, role: event.target.value }))
-          }
-        >
-          <option value="student">Student</option>
-          <option value="authority">Authority</option>
-          <option value="admin">Admin</option>
-        </select>
+    <AuthLayout
+      title="Create your account"
+      subtitle="Register to report issues and help improve your campus."
+    >
+      <form className="space-y-5" onSubmit={onSubmit}>
+        <AuthField label="Full name">
+          <input
+            className={authInputClass}
+            type="text"
+            placeholder="Your full name"
+            value={formData.name}
+            onChange={(event) =>
+              setFormData((prev) => ({ ...prev, name: event.target.value }))
+            }
+            required
+          />
+        </AuthField>
+        <AuthField label="Email address">
+          <input
+            className={authInputClass}
+            type="email"
+            placeholder="you@college.edu"
+            value={formData.email}
+            onChange={(event) =>
+              setFormData((prev) => ({ ...prev, email: event.target.value }))
+            }
+            required
+          />
+        </AuthField>
+        <AuthField label="Password">
+          <input
+            className={authInputClass}
+            type="password"
+            placeholder="Create a secure password"
+            value={formData.password}
+            onChange={(event) =>
+              setFormData((prev) => ({ ...prev, password: event.target.value }))
+            }
+            required
+          />
+        </AuthField>
+        <AuthField label="College">
+          <input
+            className={authInputClass}
+            type="text"
+            placeholder="Your institution"
+            value={formData.college}
+            onChange={(event) =>
+              setFormData((prev) => ({ ...prev, college: event.target.value }))
+            }
+            required
+          />
+        </AuthField>
+        <AuthField label="Role">
+          <select
+            className={authSelectClass}
+            value={formData.role}
+            onChange={(event) =>
+              setFormData((prev) => ({ ...prev, role: event.target.value }))
+            }
+          >
+            <option value="student">Student</option>
+            <option value="authority">Authority</option>
+            <option value="admin">Admin</option>
+          </select>
+        </AuthField>
+        <p className="pt-0.5 text-xs text-(--text-muted)">
+          Create an account with your real profile details for better community trust.
+        </p>
         <button
           type="submit"
-          className="w-full rounded bg-slate-900 px-3 py-2 text-white"
+          className={authButtonClass}
         >
-          Register
+          Create RaiseIt account
         </button>
+        <p className="pt-1 text-center text-xs text-(--text-muted)">
+          Already have an account?{" "}
+          <NavLink to="/auth/login" className={authHelperLinkClass}>
+            Sign in
+          </NavLink>
+        </p>
       </form>
-      {message && <p className="mt-4 text-sm text-slate-600">{message}</p>}
+      {message && <p className="mt-4 text-sm text-(--text-muted)">{message}</p>}
     </AuthLayout>
   );
 };

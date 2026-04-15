@@ -34,6 +34,7 @@ const register = async (req, res) => {
       password: hashedPassword,
       college,
       role: role || "student",
+      authProviders: ["local"],
     });
 
     const token = generateToken(user);

@@ -17,13 +17,13 @@ import {
 import { CircleMarker, MapContainer, Popup, TileLayer } from "react-leaflet";
 import { getPublicDashboard } from "../services/dashboardService";
 
-const COLORS = ["#0f172a", "#334155", "#64748b", "#94a3b8", "#cbd5e1", "#1e293b"];
+const COLORS = ["#6366f1", "#8b5cf6", "#06b6d4", "#14b8a6", "#f59e0b", "#ef4444"];
 
 const StatCard = ({ title, value, hint }) => (
-  <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-    <p className="text-sm text-slate-500">{title}</p>
-    <p className="mt-2 text-3xl font-semibold text-slate-900">{value}</p>
-    <p className="mt-1 text-xs text-slate-500">{hint}</p>
+  <div className="surface-glass p-4 sm:p-5">
+    <p className="text-muted text-xs font-medium uppercase tracking-wide">{title}</p>
+    <p className="mt-2 text-3xl font-semibold tracking-tight text-(--text)">{value}</p>
+    <p className="mt-1 text-xs text-(--text-soft)">{hint}</p>
   </div>
 );
 
@@ -57,7 +57,7 @@ function PublicDashboard() {
   }, [data]);
 
   if (loading) {
-    return <div className="p-8 text-slate-600">Loading dashboard...</div>;
+    return <div className="text-muted p-8">Loading dashboard...</div>;
   }
 
   if (error) {
@@ -73,13 +73,19 @@ function PublicDashboard() {
   const mapData = data?.map || { points: [], hotspots: [] };
 
   return (
-    <div className="min-h-screen bg-slate-100 px-6 py-8 text-slate-900">
+    <div className="min-h-screen bg-(--background) px-6 py-8 text-(--text)">
       <div className="mx-auto max-w-7xl space-y-6">
-        <div className="rounded-2xl bg-linear-to-r from-slate-900 to-slate-700 p-6 text-white shadow">
-          <h1 className="text-3xl font-semibold">RaiseIt Public Dashboard</h1>
-          <p className="mt-2 text-sm text-slate-100">
+        <div className="surface-hero p-6 sm:p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-(--accent)">Analytics Overview</p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">RaiseIt Public Dashboard</h1>
+          <p className="mt-2 max-w-2xl text-sm text-(--text-muted)">
             Live campus issue intelligence with trends, categories, and hotspot mapping.
           </p>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <span className="chip">Live activity</span>
+            <span className="chip">Crowd-sourced insights</span>
+            <span className="chip">Campus heat zones</span>
+          </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -106,25 +112,27 @@ function PublicDashboard() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h2 className="mb-3 text-lg font-semibold">Issues Raised vs Resolved</h2>
+          <div className="surface-card p-4 sm:p-5">
+            <h2 className="text-lg font-semibold">Issues Raised vs Resolved</h2>
+            <p className="text-muted mt-1 text-sm">Monthly trend comparison</p>
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={charts.monthlyTrend}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="label" />
-                  <YAxis />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                  <XAxis dataKey="label" tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
+                  <YAxis tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="raised" fill="#0f172a" radius={[6, 6, 0, 0]} />
-                  <Bar dataKey="resolved" fill="#64748b" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="raised" fill="#6366f1" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="resolved" fill="#22c55e" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h2 className="mb-3 text-lg font-semibold">Category Breakdown</h2>
+          <div className="surface-card p-4 sm:p-5">
+            <h2 className="text-lg font-semibold">Category Breakdown</h2>
+            <p className="text-muted mt-1 text-sm">Distribution by issue type</p>
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -142,46 +150,51 @@ function PublicDashboard() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h2 className="mb-3 text-lg font-semibold">Status Distribution</h2>
+          <div className="surface-card p-4 sm:p-5">
+            <h2 className="text-lg font-semibold">Status Distribution</h2>
+            <p className="text-muted mt-1 text-sm">Issue states across the platform</p>
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={charts.statusBreakdown}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                  <XAxis dataKey="name" tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
+                  <YAxis tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
                   <Tooltip />
-                  <Line type="monotone" dataKey="value" stroke="#0f172a" strokeWidth={3} />
+                  <Line type="monotone" dataKey="value" stroke="#a78bfa" strokeWidth={3} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h2 className="mb-3 text-lg font-semibold">Hotspot Clusters</h2>
+          <div className="surface-card p-4 sm:p-5">
+            <h2 className="text-lg font-semibold">Hotspot Clusters</h2>
+            <p className="text-muted mt-1 text-sm">Top dense locations by issue volume</p>
             <div className="space-y-3">
               {(mapData.hotspots || []).slice(0, 6).map((spot) => (
                 <div
                   key={`${spot.lat}-${spot.lng}`}
-                  className="flex items-center justify-between rounded border border-slate-200 px-3 py-2"
+                  className="surface-row flex items-center justify-between px-3 py-2"
                 >
-                  <span className="text-sm text-slate-700">
+                  <span className="text-sm">
                     {spot.lat.toFixed(2)}, {spot.lng.toFixed(2)}
                   </span>
-                  <span className="rounded bg-slate-900 px-2 py-1 text-xs text-white">
+                  <span className="rounded bg-(--accent) px-2 py-1 text-xs text-white">
                     {spot.count} issues
                   </span>
                 </div>
               ))}
               {(!mapData.hotspots || mapData.hotspots.length === 0) && (
-                <p className="text-sm text-slate-500">No dense hotspots yet.</p>
+                <p className="text-muted text-sm">No dense hotspots yet.</p>
               )}
             </div>
           </div>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h2 className="mb-3 text-lg font-semibold">Campus Map Heat & Hotspots</h2>
+        <div className="surface-card p-4 sm:p-5">
+          <h2 className="text-lg font-semibold">Campus Map Heat & Hotspots</h2>
+          <p className="text-muted mt-1 mb-3 text-sm">
+            Geographic spread of reports and concentration areas.
+          </p>
           <div className="h-[480px] overflow-hidden rounded-lg">
             <MapContainer center={mapCenter} zoom={13} className="h-full w-full">
               <TileLayer
@@ -217,7 +230,7 @@ function PublicDashboard() {
                 >
                   <Popup>
                     <p className="text-sm font-semibold">{spot.count} nearby issues</p>
-                    <p className="text-xs text-slate-600">Votes: {spot.totalVotes}</p>
+                    <p className="text-muted text-xs">Votes: {spot.totalVotes}</p>
                   </Popup>
                 </CircleMarker>
               ))}
