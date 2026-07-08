@@ -2,9 +2,9 @@
 
 ## AI-Powered Campus Issue Intelligence Platform
 
-RaiseIt is a full-stack MERN application designed to transform scattered campus complaints into structured, visible, and trackable issue workflows.
+RaiseIt is a full-stack application designed to transform scattered campus complaints into structured, visible, and trackable issue workflows.
 
-Originally developed during a national-level hackathon, the platform enables students to report issues digitally while providing authorities with organized queues, role-based workflows, and a foundation for AI-assisted moderation and prioritization.
+Originally developed during Technovate 3.0 hackathon, the platform enables students to report issues digitally while providing authorities with organized queues, role-based workflows, and a foundation for AI-assisted moderation and prioritization.
 
 ---
 
